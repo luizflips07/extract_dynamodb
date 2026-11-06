@@ -1,0 +1,19 @@
+name: validate
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Testes da Lambda
+        run: python scripts/run_lambda_tests.py
+      - name: Validar tables/*.yaml contra o schema
+        run: python scripts/validate_tables.py
+      - name: Validar Terraform
+        run: python scripts/validate_terraform.py

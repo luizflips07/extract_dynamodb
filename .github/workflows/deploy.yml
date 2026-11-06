@@ -1,0 +1,35 @@
+name: deploy
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  datalake:
+    runs-on: ubuntu-latest
+    outputs:
+      kms_key_arn: ${{ steps.deploy.outputs.kms_key_arn }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - id: deploy
+        name: Deploy conta Data Lake (exemplo)
+        run: python scripts/deploy_datalake.py
+
+  producer:
+    needs: datalake
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Deploy conta produtora (exemplo)
+        env:
+          KMS_KEY_ARN: ${{ needs.datalake.outputs.kms_key_arn }}
+        run: python scripts/deploy_producer.py
