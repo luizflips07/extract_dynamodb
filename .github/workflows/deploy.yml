@@ -17,6 +17,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - name: Validar instalação do Terraform (exemplo)
+        run: |
+          terraform version
+          terraform -chdir=infra/example init
+          terraform -chdir=infra/example validate
+          terraform -chdir=infra/example apply -auto-approve
       - id: deploy
         name: Deploy conta Data Lake (exemplo)
         run: python scripts/deploy_datalake.py
@@ -29,6 +38,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.8"
+      - name: Validar instalação do Terraform (exemplo)
+        run: terraform version
       - name: Deploy conta produtora (exemplo)
         env:
           KMS_KEY_ARN: ${{ needs.datalake.outputs.kms_key_arn }}
